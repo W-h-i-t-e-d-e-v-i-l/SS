@@ -1,7 +1,6 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import Login from "./components/Login";
-import { useData } from "./context/DataContext";
+import { AuthProvider } from "./components/AuthContext";
 
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -15,14 +14,13 @@ import JobSupportPage from "./pages/JobSupport";
 import BookingPage from "./pages/Counselling";
 import ReferAndEarn from "./pages/ReferAndEarn";
 import AcademicSupport from "./pages/AcademicSupport";
+import ProfilePage from "./pages/Profile";
 
 import Dashboard from "./adminsuite/pages/Dashboard";
-import Accounts from "./adminsuite/pages/Accounts";
 import Leads from "./adminsuite/pages/Leads";
 import AdminCourses from "./adminsuite/pages/Courses";
 import Services from "./adminsuite/pages/Services";
 import Bookings from "./adminsuite/pages/Bookings";
-import Purchases from "./adminsuite/pages/Purchases";
 import Referrals from "./adminsuite/pages/Referrals";
 import Testimonials from "./adminsuite/pages/Testimonials";
 import MediaLibrary from "./adminsuite/pages/MediaLibrary";
@@ -41,14 +39,10 @@ function ScrollToTop() {
 }
 
 function App() {
-  const { showLoginModal, setShowLoginModal } = useData();
-
   return (
     <>
+    <AuthProvider>
       <ScrollToTop />
-      {showLoginModal && (
-        <Login onClose={() => setShowLoginModal(false)} />
-      )}
 
       <Routes>
         <Route path="/" element={<Home />} />
@@ -63,6 +57,7 @@ function App() {
         <Route path="/counselling" element={<BookingPage />} />
         <Route path="/refer-earn" element={<ReferAndEarn />} />
         <Route path="/academic-support" element={<AcademicSupport />} />
+        <Route path="/profile" element={<ProfilePage />} />
 
         <Route
   path="/admin/dashboard"
@@ -74,28 +69,10 @@ function App() {
 />
 
 <Route
-  path="/admin/accounts"
-  element={
-    <AdminLayout>
-      <Accounts />
-    </AdminLayout>
-  }
-/>
-
-<Route
   path="/admin/leads"
   element={
     <AdminLayout>
       <Leads />
-    </AdminLayout>
-  }
-/>
-
-<Route
-  path="/admin/purchases"
-  element={
-    <AdminLayout>
-      <Purchases />
     </AdminLayout>
   }
 />
@@ -163,6 +140,7 @@ function App() {
   }
 />
       </Routes>
+      </AuthProvider>
     </>
   );
 }
