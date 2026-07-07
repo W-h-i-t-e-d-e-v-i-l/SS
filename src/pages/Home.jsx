@@ -65,17 +65,18 @@ export default function Home() {
     isLoggedIn,
     openLogin,
     showLogin,
+    authInteracted,
   } = useAuth();
 
-  useEffect(() => {
-  if (isLoggedIn) return;
+useEffect(() => {
+  if (isLoggedIn || authInteracted) return;
 
   const timer = setTimeout(() => {
     openLogin();
   }, 6000);
 
   return () => clearTimeout(timer);
-}, [isLoggedIn, openLogin]);
+}, [isLoggedIn, authInteracted, openLogin]);
 
   return (
     <SiteLayout>
