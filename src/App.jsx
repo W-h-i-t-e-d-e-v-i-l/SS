@@ -1,6 +1,7 @@
 import { Routes, Route, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { AuthProvider } from "./components/AuthContext";
+import { AuthProvider } from "./components/auth/AuthContext";
+import AuthModal from "./components/auth/AuthModal";
 
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -47,7 +48,7 @@ function App() {
     <>
     <AuthProvider>
       <ScrollToTop />
-
+      <AuthModal />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />

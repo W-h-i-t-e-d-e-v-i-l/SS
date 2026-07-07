@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { useAuth } from "./AuthContext";
+import { useAuth } from "./auth/AuthContext";
 import {
   Menu,
   X,
@@ -26,10 +26,11 @@ export default function Navbar() {
   const pathname = location.pathname;
   const navigate = useNavigate();
 
-  const {
-    isLoggedIn,
-    openLogin,
-  } = useAuth();
+const {
+  isLoggedIn,
+  openLogin,
+  openSignup,
+} = useAuth();
 
   useEffect(() => {
     const onScroll = () => {
@@ -97,6 +98,7 @@ export default function Navbar() {
 
             {/* Right Side */}
             <div className="hidden lg:flex items-center gap-3">
+<<<<<<< HEAD
               <button
                 onClick={() => {
                   if (isLoggedIn) {
@@ -138,6 +140,51 @@ export default function Navbar() {
                 </Link>
               )}
             </div>
+=======
+
+  <button
+    onClick={() => {
+      if (isLoggedIn) {
+        navigate("/recommend");
+      } else {
+        openLogin("/recommend");
+      }
+    }}
+    className="group inline-flex items-center gap-4 rounded-full bg-gradient-to-r from-blue-700 via-blue-600 to-orange-500 px-6 py-2.5 font-semibold text-white shadow-lg transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:from-blue-600 hover:via-orange-500 hover:to-orange-600"
+  >
+    Explore
+
+    <span className="flex h-9 w-9 items-center justify-center rounded-full bg-black text-white">
+      <ArrowRight className="h-4 w-4" />
+    </span>
+  </button>
+
+  {!isLoggedIn ? (
+    <>
+      <button
+        onClick={() => openLogin()}
+        className="rounded-full border border-white/20 px-5 py-2.5 text-white transition hover:border-orange-400 hover:text-orange-400"
+      >
+        Login
+      </button>
+
+      <button
+        onClick={() => openSignup()}
+        className="rounded-full bg-orange px-5 py-2.5 font-semibold text-white transition hover:scale-105"
+      >
+        Sign Up
+      </button>
+    </>
+  ) : (
+    <Link
+      to="/profile"
+      className="flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-all duration-300 hover:border-orange-400 hover:bg-orange-500"
+    >
+      <CircleUserRound className="h-6 w-6" />
+    </Link>
+  )}
+</div>
+>>>>>>> f72ad46b94359cfcc17c13e567c87e8cbf783a1e
 
             {/* Mobile Menu Button */}
             <button

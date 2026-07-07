@@ -25,7 +25,7 @@ import "swiper/css";
 import SiteLayout from "../components/SiteLayout";
 import CourseCard from "../components/CourseCard";
 import { COURSES, INSTITUTIONS } from "../data/courses";
-import { useAuth } from "../components/AuthContext";
+import { useAuth } from "../components/auth/AuthContext";
 
 function Counter({ to, suffix = "" }) {
   const ref = useRef(null);
@@ -92,15 +92,7 @@ export default function Home() {
 
         <div className="relative mx-auto max-w-7xl px-5 grid lg:grid-cols-12 gap-10 items-center">
           <div className="lg:col-span-7">
-            <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              className="inline-flex items-center gap-2 rounded-full glass-dark px-4 py-1.5 text-xs font-medium text-white/90"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-orange" />
-              Admin-curated. Career-focused. Built for you.
-            </motion.div>
+            
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
@@ -444,9 +436,18 @@ export default function Home() {
           <p className="mt-5 text-white/75 max-w-xl mx-auto">
             Discover opportunities tailored to your ambitions.
           </p>
-          <Link to="/recommend" className="mt-9 inline-flex items-center gap-2 rounded-full bg-orange px-7 py-4 font-semibold text-white shadow-glow hover:scale-[1.03] transition-transform">
+         <button
+          onClick={() => {
+            if (isLoggedIn) {
+              navigate("/recommend");
+            } else {
+              openLogin("/recommend");
+            }
+          }}
+            className="mt-9 inline-flex items-center gap-2 rounded-full bg-orange px-7 py-4 font-semibold text-white shadow-glow hover:scale-[1.03] transition-transform"
+          >
             Start Your Journey <ArrowRight className="h-4 w-4"/>
-          </Link>
+          </button>
         </div>
       </section>
           </div>
