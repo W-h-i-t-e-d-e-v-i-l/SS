@@ -10,6 +10,7 @@ export function AuthProvider({ children }) {
 
   const [showLogin, setShowLogin] = useState(false);
   const [showSignup, setShowSignup] = useState(false);
+  const [authInteracted, setAuthInteracted] = useState(false);
 
   const [redirectPath, setRedirectPath] = useState(null);
   const navigate = useNavigate();
@@ -27,17 +28,21 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const openLogin = (path = null) => {
-    setRedirectPath(path);
+const openLogin = (path = null) => {
+  setAuthInteracted(true);
 
-    setShowSignup(false);
-    setShowLogin(true);
-  };
+  setRedirectPath(path);
 
-  const openSignup = () => {
-    setShowLogin(false);
-    setShowSignup(true);
-  };
+  setShowSignup(false);
+  setShowLogin(true);
+};
+
+const openSignup = () => {
+  setAuthInteracted(true);
+
+  setShowLogin(false);
+  setShowSignup(true);
+};
 
   const closeAuth = () => {
     setShowLogin(false);
@@ -86,6 +91,7 @@ const logout = () => {
 
         showLogin,
         showSignup,
+        authInteracted,
 
         redirectPath,
 
