@@ -18,66 +18,18 @@ import { useData } from "../context/DataContext";
 
 export default function CourseDetails() {
   const { id } = useParams();
-  const { courses, addPurchase } = useData();
+  const { courses, settings } = useData();
 
   const course = courses.find((course) => course.id === id);
 
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [paymentStep, setPaymentStep] = useState(1); // 1 = Details form, 2 = QR payment, 3 = Success
-  const [studentDetails, setStudentDetails] = useState({ name: "", email: "", phone: "" });
-  const [txnId, setTxnId] = useState("");
-  const [modalError, setModalError] = useState("");
-  const [isSubmittingPurchase, setIsSubmittingPurchase] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
 
   if (!course) {
     return <Navigate to="/courses" replace />;
   }
 
-  const handleDetailsSubmit = (e) => {
-    e.preventDefault();
-    if (!studentDetails.name || !studentDetails.email || !studentDetails.phone) {
-      setModalError("Please fill out all fields.");
-      return;
-    }
-    setModalError("");
-    if (course.fees === "Free" || course.fees === "0") {
-      handlePurchaseComplete("FREE-" + Math.random().toString(36).substring(2, 8).toUpperCase());
-    } else {
-      setPaymentStep(2);
-    }
-  };
-
-  const handlePurchaseComplete = async (finalTxnId) => {
-    if (course.fees !== "Free" && course.fees !== "0" && (!finalTxnId || !finalTxnId.trim())) {
-      setModalError("Transaction ID / Reference is required to confirm payment.");
-      return;
-    }
-    setModalError("");
-    setIsSubmittingPurchase(true);
-    const purchaseData = {
-      student_name: studentDetails.name,
-      student_email: studentDetails.email,
-      course_id: course.id,
-      course_title: course.title,
-      amount: course.fees === "Free" ? 0 : course.fees,
-      upi_txn_id: finalTxnId,
-    };
-    
-    const res = await addPurchase(purchaseData);
-    setIsSubmittingPurchase(false);
-    if (res.success) {
-      setPaymentStep(3);
-    } else {
-      setModalError("Failed to register enrollment. Please try again.");
-    }
-  };
-
-  const closePaymentModal = () => {
-    setShowPaymentModal(false);
-    setPaymentStep(1);
-    setStudentDetails({ name: "", email: "", phone: "" });
-    setTxnId("");
-    setModalError("");
+  const closeDetailsModal = () => {
+    setShowDetailsModal(false);
   };
 
   return (
@@ -253,10 +205,10 @@ export default function CourseDetails() {
               </ul>
 
               <button
-                onClick={() => setShowPaymentModal(true)}
-                className="mt-6 w-full rounded-xl bg-cta text-white font-semibold py-3.5 shadow-glow hover:scale-[1.02] transition-transform"
+                onClick={() => setShowDetailsModal(true)}
+                className="mt-6 w-full rounded-xl bg-cta text-white font-semibold py-3.5 shadow-glow hover:scale-[1.02] transition-transform uppercase"
               >
-                Buy Course
+                Get More Details
               </button>
 
               <Link
@@ -270,139 +222,64 @@ export default function CourseDetails() {
         </div>
       </section>
 
-      {showPaymentModal && (
+      {showDetailsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
           <div className="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-[#071224] p-6 text-white shadow-2xl">
             <button
-              onClick={closePaymentModal}
+              onClick={closeDetailsModal}
               className="absolute right-5 top-5 rounded-xl p-2 text-white/70 hover:bg-white/10"
             >
               <X size={18} />
             </button>
 
-            {paymentStep === 1 && (
-              <form onSubmit={handleDetailsSubmit} className="space-y-4">
-                <h3 className="text-xl font-bold text-white">Enroll in {course.title}</h3>
-                <p className="text-sm text-white/60">
-                  {course.fees === "Free" ? "Register your details to start this free course immediately." : "Provide your details to generate your secure UPI payment."}
+            <div className="space-y-6 pt-2">
+              <div>
+                <h3 className="text-xl font-bold text-white">Get More Details</h3>
+                <p className="mt-2 text-sm text-white/60">
+                  Choose how you'd like to connect with our admissions and counselling team for <span className="font-semibold text-white">{course.title}</span>:
                 </p>
-
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-xs font-semibold text-white/70 mb-1">Full Name</label>
-                    <input
-                      type="text" required
-                      value={studentDetails.name}
-                      onChange={(e) => setStudentDetails({ ...studentDetails, name: e.target.value })}
-                      placeholder="Rahul Sharma"
-                      className="h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white outline-none focus:border-orange focus:ring-2 focus:ring-orange/30"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-white/70 mb-1">Email Address</label>
-                    <input
-                      type="email" required
-                      value={studentDetails.email}
-                      onChange={(e) => setStudentDetails({ ...studentDetails, email: e.target.value })}
-                      placeholder="rahul@example.com"
-                      className="h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white outline-none focus:border-orange focus:ring-2 focus:ring-orange/30"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-white/70 mb-1">Phone Number</label>
-                    <input
-                      type="tel" required
-                      value={studentDetails.phone}
-                      onChange={(e) => setStudentDetails({ ...studentDetails, phone: e.target.value })}
-                      placeholder="9876543210"
-                      className="h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white outline-none focus:border-orange focus:ring-2 focus:ring-orange/30"
-                    />
-                  </div>
-                </div>
-
-                {modalError && <p className="text-xs text-red-400 font-semibold">{modalError}</p>}
-
-                <button
-                  type="submit"
-                  className="w-full rounded-xl bg-[var(--orange)] py-3 font-semibold text-white transition hover:brightness-110 active:scale-95 shadow-lg"
-                >
-                  {course.fees === "Free" ? "Start Course" : "Proceed to Pay"}
-                </button>
-              </form>
-            )}
-
-            {paymentStep === 2 && (
-              <div className="text-center space-y-4">
-                <h3 className="text-xl font-bold">Scan & Pay</h3>
-                <p className="text-sm text-white/60">
-                  Scan the QR code below with GPay, PhonePe, Paytm, or any UPI app to complete your payment of <span className="font-bold text-orange">₹{course.fees}</span>.
-                </p>
-
-                <div className="mx-auto flex h-52 w-52 items-center justify-center rounded-2xl bg-white p-3 shadow-lg">
-                  <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(
-                      `upi://pay?pa=sspathways@upi&pn=SS Pathways&am=${course.fees.replace(/[^0-9]/g, "")}&tn=${course.id}&cu=INR`
-                    )}`}
-                    alt="UPI Payment QR Code"
-                    className="h-full w-full object-contain"
-                  />
-                </div>
-
-                <div className="text-xs text-white/40">
-                  UPI ID: <span className="font-mono text-white/80">sspathways@upi</span>
-                </div>
-
-                <div className="space-y-3 pt-2 text-left">
-                  <div>
-                    <label className="block text-xs font-semibold text-white/70 mb-1">Transaction ID / Ref (Required)</label>
-                    <input
-                      type="text"
-                      required
-                      value={txnId}
-                      onChange={(e) => setTxnId(e.target.value)}
-                      placeholder="e.g. UPI1234567890"
-                      className="h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white outline-none focus:border-orange focus:ring-2 focus:ring-orange/30"
-                    />
-                  </div>
-                </div>
-
-                {modalError && <p className="text-xs text-red-400 font-semibold">{modalError}</p>}
-
-                <div className="flex gap-2 pt-2">
-                  <button
-                    onClick={() => setPaymentStep(1)}
-                    className="flex-1 rounded-xl border border-white/15 bg-white/5 py-3 font-semibold text-white hover:bg-white/10"
-                  >
-                    Back
-                  </button>
-                  <button
-                    disabled={isSubmittingPurchase}
-                    onClick={() => handlePurchaseComplete(txnId)}
-                    className="flex-[2] rounded-xl bg-[var(--orange)] py-3 font-semibold text-white hover:brightness-110 active:scale-95 disabled:opacity-50"
-                  >
-                    {isSubmittingPurchase ? "Processing..." : "Confirm Payment"}
-                  </button>
-                </div>
               </div>
-            )}
 
-            {paymentStep === 3 && (
-              <div className="text-center py-6 space-y-4">
-                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/25">
-                  <Check size={32} />
-                </div>
-                <h3 className="text-2xl font-bold text-white">Enrollment Successful!</h3>
-                <p className="text-sm text-white/70">
-                  Congratulations, you have successfully enrolled in <span className="font-semibold text-white">{course.title}</span>. Our team will contact you shortly with the onboarding credentials.
-                </p>
-                <button
-                  onClick={closePaymentModal}
-                  className="w-full rounded-xl bg-emerald-500 py-3 font-semibold text-white hover:bg-emerald-600 active:scale-95"
+              <div className="space-y-4">
+                {/* Book Counselling Option */}
+                <Link
+                  to="/counselling"
+                  className="block group p-4 rounded-2xl border border-white/10 bg-white/5 hover:border-orange hover:bg-white/10 transition-all text-left"
                 >
-                  Go to Classroom
-                </button>
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-orange/10 text-orange rounded-xl group-hover:scale-110 transition-transform">
+                      <Clock className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className="font-bold text-white text-base">Book Free Counselling</p>
+                      <p className="text-xs text-white/50 mt-0.5">Schedule a 1-on-1 private session with our counselors.</p>
+                    </div>
+                  </div>
+                </Link>
+
+                {/* WhatsApp Option */}
+                <a
+                  href={`https://wa.me/${(settings?.contact?.phone || "919876543210").replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
+                    `Hi, I would like to get more details about the course: ${course.title} (Institution: ${course.institution || "SS Pathways"}).`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block group p-4 rounded-2xl border border-white/10 bg-white/5 hover:border-emerald-500 hover:bg-white/10 transition-all text-left"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 bg-emerald-500/10 text-emerald-400 rounded-xl group-hover:scale-110 transition-transform">
+                      <svg className="h-6 w-6 fill-current" viewBox="0 0 24 24">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.746.953 3.71 1.458 5.704 1.46h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <p className="font-bold text-white text-base">Connect on WhatsApp</p>
+                      <p className="text-xs text-white/50 mt-0.5">Chat instantly with our admissions team on WhatsApp.</p>
+                    </div>
+                  </div>
+                </a>
               </div>
-            )}
+            </div>
           </div>
         </div>
       )}

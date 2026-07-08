@@ -213,6 +213,14 @@ app.post("/api/bookings", async (req, res) => {
 
     const formattedDate = typeof date === "string" ? date.slice(0, 10) : new Date(date).toISOString().slice(0, 10);
 
+    // Duplication Check: Prevent booking if there's an existing booking with the same phone, date, and time
+    const isDuplicate = db.bookings.some(
+        b => b.phone === phone && b.date === formattedDate && b.time === time
+    );
+    if (isDuplicate) {
+        return res.status(400).json({ error: "A booking already exists for this number, date, and time slot." });
+    }
+
     const newBooking = {
         id: "BK-" + (2000 + db.bookings.length),
         student: name,

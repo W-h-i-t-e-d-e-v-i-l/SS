@@ -22,6 +22,7 @@ function CoursesPage() {
 
   const [formData, setFormData] = useState({
     title: "",
+    institution: "",
     category: "Technology",
     mode: "Online",
     duration: "12 weeks",
@@ -38,6 +39,7 @@ function CoursesPage() {
     setEditingCourse(null);
     setFormData({
       title: "",
+      institution: "",
       category: "Technology",
       mode: "Online",
       duration: "12 weeks",
@@ -56,6 +58,7 @@ function CoursesPage() {
     setEditingCourse(c);
     setFormData({
       title: c.title,
+      institution: c.institution || "",
       category: c.category,
       mode: c.mode,
       duration: c.duration,
@@ -156,6 +159,11 @@ function CoursesPage() {
             </div>
 
             <div className="p-5 text-white">
+              {c.institution && (
+                <div className="text-[10px] uppercase tracking-wider text-orange font-semibold mb-1">
+                  {c.institution}
+                </div>
+              )}
               <h3 className="text-base font-semibold leading-snug line-clamp-1">{c.title}</h3>
 
               <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">
@@ -220,6 +228,17 @@ function CoursesPage() {
 
               <form onSubmit={handleSubmit} className="space-y-4 max-h-[75vh] overflow-y-auto pr-2 scrollbar-thin">
                 <div className="grid grid-cols-2 gap-4">
+                  <div className="col-span-2">
+                    <label className="block text-xs font-semibold text-white/70 mb-1">University / Institution Name</label>
+                    <input
+                      type="text"
+                      value={formData.institution}
+                      onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
+                      placeholder="e.g. SS Pathways Academy or Stanford University"
+                      className="h-10 w-full rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white outline-none focus:border-orange focus:ring-2 focus:ring-orange/30"
+                    />
+                  </div>
+
                   <div className="col-span-2">
                     <label className="block text-xs font-semibold text-white/70 mb-1">Course Title *</label>
                     <input
