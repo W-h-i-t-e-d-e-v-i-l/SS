@@ -1,6 +1,13 @@
 {
   "logins": [
     {
+      "id": "LG-1004",
+      "email": "admin@sspathways.com",
+      "name": "Admin",
+      "date": "2026-07-08",
+      "timestamp": 1783530299614
+    },
+    {
       "id": "LG-1003",
       "email": "admin@sspathways.com",
       "name": "Admin",
@@ -50,6 +57,26 @@
     }
   },
   "leads": [
+    {
+      "id": "LD-1013",
+      "name": "Arpit Mishra",
+      "phone": "+919438701455",
+      "email": "arpitbbsrboy@gmail.com",
+      "service": "Counselling",
+      "date": "2026-07-09",
+      "status": "New",
+      "notes": "Booked session for 2026-07-16 at 2:30 PM. wow"
+    },
+    {
+      "id": "LD-1012",
+      "name": "Arpit Mishra",
+      "phone": "9438701455",
+      "email": "arpitbbsrboy@gmail.com",
+      "service": "Counselling",
+      "date": "2026-07-09",
+      "status": "New",
+      "notes": "Booked session for 2026-07-28 at 9:30 AM. wow"
+    },
     {
       "id": "LD-1011",
       "name": "wowowowowowjjj",
@@ -604,6 +631,26 @@
     }
   ],
   "bookings": [
+    {
+      "id": "BK-2006",
+      "student": "Arpit Mishra",
+      "phone": "+919438701455",
+      "date": "2026-07-16",
+      "time": "2:30 PM",
+      "counsellor": "Dr. Anil Verma",
+      "status": "Pending",
+      "notes": "wow"
+    },
+    {
+      "id": "BK-2005",
+      "student": "Arpit Mishra",
+      "phone": "9438701455",
+      "date": "2026-07-28",
+      "time": "9:30 AM",
+      "counsellor": "Dr. Anil Verma",
+      "status": "Pending",
+      "notes": "wow"
+    },
     {
       "id": "BK-2000",
       "student": "Rahul Sharma",

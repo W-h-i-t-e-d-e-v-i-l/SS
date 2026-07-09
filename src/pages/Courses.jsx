@@ -7,7 +7,6 @@ import {
   useScroll,
   useTransform,
 } from "framer-motion";
-import CountUp from "react-countup";
 import {
   Search,
   Sparkles,
@@ -484,6 +483,36 @@ function SearchGroup({
 }
 
 /* ────────────────────────────────────────────── */
+/*  COUNTER                                      */
+/* ────────────────────────────────────────────── */
+function Counter({ to, suffix = "", duration = 1.8 }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: "-50px" });
+  const [val, setVal] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    const start = performance.now();
+    let raf = 0;
+    const tick = (t) => {
+      const p = Math.min(1, (t - start) / (duration * 1000));
+      const eased = 1 - Math.pow(1 - p, 3);
+      setVal(Math.round(to * eased));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, to, duration]);
+
+  return (
+    <span ref={ref}>
+      {val}
+      {suffix}
+    </span>
+  );
+}
+
+/* ────────────────────────────────────────────── */
 /*  STATS                                        */
 /* ────────────────────────────────────────────── */
 function Stats() {
@@ -517,6 +546,10 @@ function Stats() {
                   <Icon className="h-4 w-4 text-primary" /> {s.label}
                 </div>
                 
+                <div className="mt-2 text-3xl md:text-4xl font-extrabold tracking-tight text-ink font-display">
+                  <Counter to={s.end} suffix={s.suffix} />
+                </div>
+
                 <div className="absolute -right-6 -bottom-6 h-24 w-24 rounded-full bg-primary/10 blur-2xl group-hover:bg-primary/20 transition" />
               </motion.div>
             );

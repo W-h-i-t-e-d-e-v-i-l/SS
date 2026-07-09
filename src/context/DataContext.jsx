@@ -350,10 +350,11 @@ export function DataProvider({ children }) {
         fetchDashboardStats();
         return { success: true, booking: newBooking };
       }
-      return { success: false };
+      const errData = await res.json().catch(() => ({}));
+      return { success: false, error: errData.error || "Failed to create booking" };
     } catch (err) {
       console.error("Error adding booking:", err);
-      return { success: false };
+      return { success: false, error: "Network error, please try again" };
     }
   };
 

@@ -99,6 +99,7 @@ export function BookingPage() {
   const [otpError, setOtpError] = useState("");
   const [pendingData, setPendingData] = useState(null);
   const [isSendingOTP, setIsSendingOTP] = useState(false);
+  const [sandboxCode, setSandboxCode] = useState("");
 
   const { addBooking, sendSMSOTP, verifySMSOTP } = useData();
 
@@ -124,10 +125,14 @@ export function BookingPage() {
     setPendingData(data);
     setIsSendingOTP(true);
     setOtpError("");
+    setSandboxCode("");
     const res = await sendSMSOTP(data.phone);
     setIsSendingOTP(false);
     if (res.success) {
       setShowOTPModal(true);
+      if (res.sandbox && res.code) {
+        setSandboxCode(res.code);
+      }
     } else {
       setOtpError(res.error || "Failed to send verification code. Please try again.");
     }
@@ -162,10 +167,14 @@ export function BookingPage() {
   const handleResendOTP = async () => {
     setOtpError("");
     setIsSendingOTP(true);
+    setSandboxCode("");
     const res = await sendSMSOTP(pendingData.phone);
     setIsSendingOTP(false);
     if (res.success) {
       setOtpError("Verification code resent successfully!");
+      if (res.sandbox && res.code) {
+        setSandboxCode(res.code);
+      }
     } else {
       setOtpError(res.error || "Failed to resend code.");
     }
@@ -520,6 +529,14 @@ export function BookingPage() {
               </p>
 
               <div className="mt-6 space-y-4">
+                {sandboxCode && (
+                  <div className="rounded-xl bg-orange/10 border border-orange/20 p-3 text-center">
+                    <p className="text-xs text-orange/90 font-medium">
+                      [Sandbox Mode] Verification code:{" "}
+                      <span className="font-bold text-base text-orange tracking-wider selection:bg-orange/20">{sandboxCode}</span>
+                    </p>
+                  </div>
+                )}
                 <div>
                   <label className="text-xs font-semibold uppercase tracking-wider text-white/50">Verification Code</label>
                   <input
